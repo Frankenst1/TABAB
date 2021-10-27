@@ -24,84 +24,84 @@ let advancingTower = false;
 let encounteredBoss = false;
 
 function start() {
-	logTABA("start?", gameStarted)
-	if (!gameStarted) {
-		console.log("instant call");
-		console.log($(".game_start_over"));
+    logTABA("start?", gameStarted);
+    if (!gameStarted) {
+        console.log("instant call");
+        console.log($(".game_start_over"));
 
-		// Check/wait if element exists
-		(function checkIfElemExists() {
-			console.log("checking if element is availableè")
-			if (!document.querySelector('.game_start_over')) {
-				window.requestAnimationFrame(checkIfElemExists);
-			} else {
-				if ($(".game_start_over").length) {
-					$(".game_start_over")[0].click();
+        // Check/wait if element exists
+        (function checkIfElemExists() {
+            console.log("checking if element is availableè");
+            if (!document.querySelector(".game_start_over")) {
+                window.requestAnimationFrame(checkIfElemExists);
+            } else {
+                if ($(".game_start_over").length) {
+                    $(".game_start_over")[0].click();
 
-					gameStarted = true;
-				}
-			}
-		})()
-	}
+                    gameStarted = true;
+                }
+            }
+        })();
+    }
 }
 
 function logTABA(...args) {
-	let currDate = new Date();
-	let text;
-	const prefix =
-		currDate.toLocaleString() + "." + currDate.getMilliseconds() + ":";
+    let currDate = new Date();
+    let text;
+    const prefix =
+        currDate.toLocaleString() + "." + currDate.getMilliseconds() + ":";
 
-	if (args.length === 1) {
-		if (typeof args[0] === "string" || args[0] instanceof String) {
-			text = args[0];
-		} else {
-			text = JSON.stringify(args[0], null, 2);
-		}
-	} else {
-		text = JSON.stringify(args, null, 2);
-	}
+    if (args.length === 1) {
+        if (typeof args[0] === "string" || args[0] instanceof String) {
+            text = args[0];
+        } else {
+            text = JSON.stringify(args[0], null, 2);
+        }
+    } else {
+        text = JSON.stringify(args, null, 2);
+    }
 
-	if (typeof GM_log === "function") {
-		GM_log(prefix + ":" + text);
-	} else {
-		console.log(prefix + ":" + text)
-	}
+    if (typeof GM_log === "function") {
+        GM_log(prefix + ":" + text);
+    } else {
+        console.log(prefix + ":" + text);
+    }
 }
 
 function setTABAVars(key, value) {
-	logTABA("Setting variables.");
+    logTABA("Setting variables.");
 }
 
 function getGaugeData() {
-	logTABA("⏱ Collecting gauge data");
+    logTABA("⏱ Collecting gauge data");
 
-	try {
-		let staminaGage = document.querySelector("#stam_gage_num").textContent;
-		staminaGage = staminaGage.match(".+?(?=/)");
-		staminaValue = staminaGage ? staminaGage[0] : null;
+    try {
+        let staminaGage = document.querySelector("#stam_gage_num").textContent;
+        staminaGage = staminaGage.match(".+?(?=/)");
+        staminaValue = staminaGage ? staminaGage[0] : null;
 
-		let bpGage = document.querySelector("#top_bp_num").textContent;
-		bpGage = bpGage.match(".+?(?=/)");
-		bpValue = bpGage ? bpGage[0] : null;
+        let bpGage = document.querySelector("#top_bp_num").textContent;
+        bpGage = bpGage.match(".+?(?=/)");
+        bpValue = bpGage ? bpGage[0] : null;
 
-		let bpGageTime = document.querySelector("#bp_gage_time").textContent;
+        let bpGageTime = document.querySelector("#bp_gage_time").textContent;
 
-		return bpGage;
-	} catch (error) {
-		logTABA(error);
-		setTimeout(getGaugeData, 500);
-	}
+        return bpGage;
+    } catch (error) {
+        logTABA(error);
+        setTimeout(getGaugeData, 500);
+    }
 }
 
 async function checkElement(selector) {
-	const querySelector = null;
-	while (querySelector === null) {
-		await rafAsync();
-		querySelector = document.querySelector(selector);
-	}
-	return querySelector;
+    const querySelector = null;
+    while (querySelector === null) {
+        await rafAsync();
+        querySelector = document.querySelector(selector);
+    }
+    return querySelector;
 }
 
 (function () {
-	start();
+    start();
 })();
