@@ -77,6 +77,8 @@ function setTABAVars() {
     setCurrentEventType();
     setGaugesData();
     console.log(getGaugeData());
+
+    goToEvent();
 }
 
 function setCurrentEventType() {
@@ -92,6 +94,10 @@ function setCurrentEventType() {
     }
 
     eventType = eventPrefix ? eventTypes[eventPrefix] : eventTypes.default;
+}
+
+function getCurrentEventType() {
+    return eventType;
 }
 
 function setGaugesData() {
@@ -125,7 +131,47 @@ function getGaugeData(key = null) {
     }
 }
 
-function getCurrentEventType() {}
+function goToMainPage() {
+    document.querySelector("#mypage").click();
+}
+
+function goToEvent() {
+    // Navigate to the event frame and start doing the event steps.
+    goToMainPage();
+
+    (function checkIfElemExists() {
+        if (!document.querySelector("#main_frame > a[href*='_event_']")) {
+            window.requestAnimationFrame(checkIfElemExists);
+        } else {
+            document.querySelector("#main_frame > a[href*='_event_']").click();
+        }
+    })();
+
+    switch (getCurrentEventType()) {
+        case 0:
+            doQuest();
+            break;
+        case 1:
+            doArenaEvent();
+            break;
+        case 2:
+            doRaidEvent();
+            break;
+        case 3:
+            doTowerEvent();
+            break;
+        case 4:
+            doHuntEvent();
+            break;
+    }
+}
+function doQuest() {}
+function doArenaEvent() {}
+function doRaidEvent() {}
+function doTowerEvent() {
+    console.log("will attempt tower event");
+}
+function doHuntEvent() {}
 
 (function () {
     start();
