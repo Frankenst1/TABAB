@@ -14,7 +14,7 @@
 let gameStarted = false;
 let staminaValue = null;
 let bpValue = null;
-let bpGageTime = null;
+let bpGaugeTime = null;
 const transitionDuration = 2500;
 const clickTimeout = 3000;
 let eventType = 0; // 0 = none/unknown, 1 = arena, 2 = raid, 3 = tower, 4 = hunt
@@ -43,7 +43,6 @@ function start() {
             if (!document.querySelector("#main_frame")) {
                 window.requestAnimationFrame(checkIfElemExists);
             } else {
-                console.log("time to get stuff ready!");
                 setTABAVars();
             }
         })();
@@ -76,6 +75,8 @@ function logTABA(...args) {
 // TODO: TABAVars -> Object
 function setTABAVars() {
     setCurrentEventType();
+    setGaugesData();
+    console.log(getGaugeData());
 }
 
 function setCurrentEventType() {
@@ -85,46 +86,46 @@ function setCurrentEventType() {
     );
     let eventPrefix;
 
-    console.log(eventBanner);
     if (eventBanner) {
         console.log("ok?");
         eventPrefix = eventBanner.getAttribute("href").split("/")[1];
     }
 
-    eventType = eventPrefix ? eventTypes[eventPrefix] : eventTypes["default"];
+    eventType = eventPrefix ? eventTypes[eventPrefix] : eventTypes.default;
+}
+
+function setGaugesData() {
+    try {
+        let staminaGauge = document.querySelector("#stam_gage_num").textContent;
+        staminaGauge = staminaGauge.match(".+?(?=/)");
+        staminaValue = staminaGauge ? staminaGauge[0] : null;
+
+        let bpGauge = document.querySelector("#top_bp_num").textContent;
+        bpGauge = bpGauge.match(".+?(?=/)");
+        bpValue = bpGauge ? bpGauge[0] : null;
+
+        let bpGaugeTime = document.querySelector("#bp_gage_time").textContent;
+        bpGaugeTime = bpGaugeTime;
+    } catch (error) {
+        logTABA(error);
+    }
+}
+
+function getGaugeData(key = null) {
+    switch (key) {
+        case "stamina":
+            return staminaValue;
+        case "bp":
+            return [bpValue, bpGaugeTime];
+        default:
+            return {
+                stamina: staminaValue,
+                bp: [bpValue, bpGaugeTime],
+            };
+    }
 }
 
 function getCurrentEventType() {}
-
-function getGaugeData() {
-    logTABA("⏱ Collecting gauge data");
-
-    try {
-        let staminaGage = document.querySelector("#stam_gage_num").textContent;
-        staminaGage = staminaGage.match(".+?(?=/)");
-        staminaValue = staminaGage ? staminaGage[0] : null;
-
-        let bpGage = document.querySelector("#top_bp_num").textContent;
-        bpGage = bpGage.match(".+?(?=/)");
-        bpValue = bpGage ? bpGage[0] : null;
-
-        let bpGageTime = document.querySelector("#bp_gage_time").textContent;
-
-        return bpGage;
-    } catch (error) {
-        logTABA(error);
-        setTimeout(getGaugeData, 500);
-    }
-}
-
-async function checkElement(selector) {
-    const querySelector = null;
-    while (querySelector === null) {
-        await rafAsync();
-        querySelector = document.querySelector(selector);
-    }
-    return querySelector;
-}
 
 (function () {
     start();
