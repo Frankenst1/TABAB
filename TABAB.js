@@ -24,22 +24,27 @@ let advancingTower = false;
 let encounteredBoss = false;
 
 function start() {
-    logTABA("start?", gameStarted);
     if (!gameStarted) {
-        console.log("instant call");
-        console.log($(".game_start_over"));
-
         // Check/wait if element exists
         (function checkIfElemExists() {
-            console.log("checking if element is availableè");
             if (!document.querySelector(".game_start_over")) {
                 window.requestAnimationFrame(checkIfElemExists);
             } else {
-                if ($(".game_start_over").length) {
-                    $(".game_start_over")[0].click();
+                $(".game_start_over")[0].click();
 
-                    gameStarted = true;
-                }
+                gameStarted = true;
+                start();
+            }
+        })();
+    } else {
+        // If main frame is not present, we're probably still in transition to the main frame.
+        // Check/wait if element exists
+        (function checkIfElemExists() {
+            if (!document.querySelector("#main_frame")) {
+                window.requestAnimationFrame(checkIfElemExists);
+            } else {
+                console.log("time to get stuff ready!");
+                setTABAVars();
             }
         })();
     }
@@ -68,9 +73,28 @@ function logTABA(...args) {
     }
 }
 
-function setTABAVars(key, value) {
-    logTABA("Setting variables.");
+// TODO: TABAVars -> Object
+function setTABAVars() {
+    setCurrentEventType();
 }
+
+function setCurrentEventType() {
+    // This is only possible on the main page (for now).
+    let eventBanner = document.querySelector(
+        "#main_frame > a[href*='_event_']"
+    );
+    let eventPrefix;
+
+    console.log(eventBanner);
+    if (eventBanner) {
+        console.log("ok?");
+        eventPrefix = eventBanner.getAttribute("href").split("/")[1];
+    }
+
+    eventType = eventPrefix ? eventTypes[eventPrefix] : eventTypes["default"];
+}
+
+function getCurrentEventType() {}
 
 function getGaugeData() {
     logTABA("⏱ Collecting gauge data");
