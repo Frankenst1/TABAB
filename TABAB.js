@@ -17,7 +17,7 @@ let bpValue = null;
 let bpGaugeTime = null;
 const transitionDuration = 2500;
 const clickTimeout = 3000;
-let eventType = 0; // 0 = none/unknown, 1 = arena, 2 = raid, 3 = tower, 4 = hunt
+let currentEventType = 0; // 0 = none/unknown, 1 = arena, 2 = raid, 3 = tower, 4 = hunt
 const eventTypes = { default: 0, arena: 1, raid: 2, tower: 3, hunt: 4 };
 const appLevel = 0;
 let advancingTower = false;
@@ -37,7 +37,8 @@ function start() {
             }
         })();
     } else {
-        // If main frame is not present, we're probably still in transition to the main frame.
+        // TODO: Better to check on comback_bonus.js or login_bonus.js ?
+        // If main frame is not present, we're probably still in transition to the main frame (with exception of login page).
         // Check/wait if element exists
         (function checkIfElemExists() {
             if (!document.querySelector("#main_frame")) {
@@ -89,15 +90,14 @@ function setCurrentEventType() {
     let eventPrefix;
 
     if (eventBanner) {
-        console.log("ok?");
         eventPrefix = eventBanner.getAttribute("href").split("/")[1];
     }
 
-    eventType = eventPrefix ? eventTypes[eventPrefix] : eventTypes.default;
+    currentEventType = eventPrefix ? eventTypes[eventPrefix] : eventTypes.default;
 }
 
 function getCurrentEventType() {
-    return eventType;
+    return currentEventType;
 }
 
 function setGaugesData() {
