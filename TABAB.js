@@ -11,42 +11,35 @@
 // @downloadURL  https://github.com/Frankenst1/TABAB/raw/main/TABAB.js
 // ==/UserScript==
 
+// Game status/settings
 let gameStarted = false;
+const transitionDuration = 2500;
+const clickTimeout = 5000;
+// 0: main menu, 1: event menu, 2: inside event
+const appLevel = 0;
+let currentEventType = 0;
+// 0 = none/unknown, 1 = arena, 2 = raid, 3 = tower, 4 = hunt
+const eventTypes = { default: 0, arena: 1, raid: 2, tower: 3, hunt: 4 };
+let advancingTower = false;
+let encounteredBoss = false;
+// Player stats
 let staminaValue = null;
 let bpValue = null;
 let bpGaugeTime = null;
-const transitionDuration = 2500;
-const clickTimeout = 3000;
-let currentEventType = 0; // 0 = none/unknown, 1 = arena, 2 = raid, 3 = tower, 4 = hunt
-const eventTypes = { default: 0, arena: 1, raid: 2, tower: 3, hunt: 4 };
-const appLevel = 0;
-let advancingTower = false;
-let encounteredBoss = false;
 
 function start() {
     if (!gameStarted) {
-        // Check/wait if element exists
-        (function checkIfElemExists() {
-            if (!document.querySelector(".game_start_over")) {
-                window.requestAnimationFrame(checkIfElemExists);
-            } else {
-                $(".game_start_over")[0].click();
-
+        const gameStartButtonSelector = ".game_start_over";
+        waitForElement(gameStartButtonSelector, function () {
+            console.log("starting the game");
+            clickOnElement(gameStartButtonSelector);
                 gameStarted = true;
                 start();
-            }
-        })();
+        });
     } else {
         // TODO: Better to check on comback_bonus.js or login_bonus.js ?
         // If main frame is not present, we're probably still in transition to the main frame (with exception of login page).
-        // Check/wait if element exists
-        (function checkIfElemExists() {
-            if (!document.querySelector("#main_frame")) {
-                window.requestAnimationFrame(checkIfElemExists);
-            } else {
-                setTABAVars();
-            }
-        })();
+        waitForElement("#main_frame", setTABAVars());
     }
 }
 
@@ -93,7 +86,9 @@ function setCurrentEventType() {
         eventPrefix = eventBanner.getAttribute("href").split("/")[1];
     }
 
-    currentEventType = eventPrefix ? eventTypes[eventPrefix] : eventTypes.default;
+    currentEventType = eventPrefix
+        ? eventTypes[eventPrefix]
+        : eventTypes.default;
 }
 
 function getCurrentEventType() {
@@ -173,6 +168,23 @@ function doTowerEvent() {
 }
 function doHuntEvent() {}
 
+// Helper functions
+function waitForElement(selector, callback) {
+    (function checkIfElemExists() {
+        if (!document.querySelector(selector)) {
+            window.requestAnimationFrame(checkIfElemExists);
+        } else {
+            console.log("calling callback function.");
+            callback();
+        }
+    })();
+}
+
+function clickOnElement(selector) {
+    document.querySelector(selector).click();
+}
+
+// Start script on page load.
 (function () {
     start();
 })();
