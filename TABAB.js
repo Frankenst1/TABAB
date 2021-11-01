@@ -75,19 +75,33 @@ function setTABAVars() {
 }
 
 function setCurrentEventType() {
-    // This is only possible on the main page (for now).
-    let eventBanner = document.querySelector(
-        "#main_frame > a[href*='_event_']"
-    );
-    let eventPrefix;
-
-    if (eventBanner) {
-        eventPrefix = eventBanner.getAttribute("href").split("/")[1];
+    // This is only possible on the main page.
+    if (!appLevel === 0) {
+        goTo("home");
+        appLevel = 0;
+        setCurrentEventType();
+        return;
     }
 
-    currentEventType = eventPrefix
-        ? eventTypes[eventPrefix]
-        : eventTypes.default;
+    console.log("setting current event");
+    const eventBannerSelector = "#main_frame > a[href*='_event_']";
+
+    let eventPrefix;
+
+    waitFor(eventBannerSelector).then(function () {
+        let eventBanner = document.querySelector(
+            "#main_frame > a[href*='_event_']"
+        );
+    let eventPrefix;
+
+        if (eventBanner) {
+            eventPrefix = eventBanner.getAttribute("href").split("/")[1];
+        }
+
+        currentEventType = eventPrefix
+            ? eventTypes[eventPrefix]
+            : eventTypes.default;
+    });
 }
 
 function getCurrentEventType() {
@@ -134,9 +148,9 @@ function goTo(location) {
             // Navigate to the event frame and start doing the event steps. (only do this when not already on the main page.)
             // goToMainPage();
             console.log("go to event");
-            let eventBannerSelector = "#main_frame > a[href*='_event_']";
-            waitFor(eventBannerSelector).then(
-                clickOnElement(eventBannerSelector)
+            console.log(getCurrentEventType());
+            waitFor("#main_frame > a[href*='_event_']").then(
+                clickOnElement("#main_frame > a[href*='_event_']")
             );
     }
 }
