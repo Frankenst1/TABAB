@@ -39,7 +39,9 @@ function start() {
         });
     } else {
         console.log("waiting");
-        waitFor("#main_frame").then(() => {
+		waitFor("#main_frame").then(() => {
+			setTABAVars();
+			// TODO: add ability to start go to (when we want to do events/quests etc.).
             goTo("event");
         });
     }
