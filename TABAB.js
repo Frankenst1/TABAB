@@ -13,7 +13,7 @@
 
 // Game status/settings
 let gameStarted = false;
-const clickTimeout = 5000;
+const clickTimeout = 2000;
 // 0: main menu, 1: event menu, 2: inside event
 const appLevel = 0;
 let currentEventType = 0;
@@ -38,32 +38,10 @@ function start() {
             start();
         });
     } else {
-        waitFor("#main_frame").then(setTABAVars());
-
-        goTo("event");
-    }
-}
-
-function logTABA(...args) {
-    let currDate = new Date();
-    let text;
-    const prefix =
-        currDate.toLocaleString() + "." + currDate.getMilliseconds() + ":";
-
-    if (args.length === 1) {
-        if (typeof args[0] === "string" || args[0] instanceof String) {
-            text = args[0];
-        } else {
-            text = JSON.stringify(args[0], null, 2);
-        }
-    } else {
-        text = JSON.stringify(args, null, 2);
-    }
-
-    if (typeof GM_log === "function") {
-        GM_log(prefix + ":" + text);
-    } else {
-        console.log(prefix + ":" + text);
+        console.log("waiting");
+        waitFor("#main_frame").then(() => {
+            goTo("event");
+        });
     }
 }
 
@@ -92,10 +70,10 @@ function setCurrentEventType() {
         let eventBanner = document.querySelector(
             "#main_frame > a[href*='_event_']"
         );
-    let eventPrefix;
 
         if (eventBanner) {
             eventPrefix = eventBanner.getAttribute("href").split("/")[1];
+            console.log("event prefix", eventPrefix);
         }
 
         currentEventType = eventPrefix
@@ -148,7 +126,7 @@ function goTo(location) {
             // Navigate to the event frame and start doing the event steps. (only do this when not already on the main page.)
             // goToMainPage();
             console.log("go to event");
-            console.log(getCurrentEventType());
+            console.log("current event set?", getCurrentEventType());
             waitFor("#main_frame > a[href*='_event_']").then(
                 clickOnElement("#main_frame > a[href*='_event_']")
             );
@@ -215,6 +193,31 @@ function clickOnElement(selector, delayMs = clickTimeout) {
             console.log("unable to find element", selector);
         }
     }, delayMs);
+}
+
+const delay = (n) => new Promise((r) => setTimeout(r, n * 1000));
+
+function logTABA(...args) {
+    let currDate = new Date();
+    let text;
+    const prefix =
+        currDate.toLocaleString() + "." + currDate.getMilliseconds() + ":";
+
+    if (args.length === 1) {
+        if (typeof args[0] === "string" || args[0] instanceof String) {
+            text = args[0];
+        } else {
+            text = JSON.stringify(args[0], null, 2);
+        }
+    } else {
+        text = JSON.stringify(args, null, 2);
+    }
+
+    if (typeof GM_log === "function") {
+        GM_log(prefix + ":" + text);
+    } else {
+        console.log(prefix + ":" + text);
+    }
 }
 
 // Start script on page load.
