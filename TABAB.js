@@ -29,12 +29,14 @@ let bpGaugeTime = null;
 
 function start() {
     if (!gameStarted) {
-        const gameStartButtonSelector = ".game_start_over";
+		// Adding opacity 1 allows us to wait to click until the "start" animation is done.
+		const opacityStyle="[style='opacity: 1;']";
+        const gameStartButtonSelector = ".game_start_over"+opacityStyle;
         waitFor(gameStartButtonSelector).then(function () {
             console.log("starting the game");
             clickOnElement(gameStartButtonSelector);
-                gameStarted = true;
-                start();
+            gameStarted = true;
+            start();
         });
     } else {
         waitFor("#main_frame").then(setTABAVars());
