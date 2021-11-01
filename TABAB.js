@@ -13,7 +13,6 @@
 
 // Game status/settings
 let gameStarted = false;
-const transitionDuration = 2500;
 const clickTimeout = 5000;
 // 0: main menu, 1: event menu, 2: inside event
 const appLevel = 0;
@@ -29,17 +28,19 @@ let bpGaugeTime = null;
 
 function start() {
     if (!gameStarted) {
-		// Adding opacity 1 allows us to wait to click until the "start" animation is done.
-		const opacityStyle="[style='opacity: 1;']";
-        const gameStartButtonSelector = ".game_start_over"+opacityStyle;
+        // Adding opacity 1 allows us to wait to click until the "start" animation is done.
+        const opacityStyle = "[style='opacity: 1;']";
+        const gameStartButtonSelector = ".game_start_over" + opacityStyle;
         waitFor(gameStartButtonSelector).then(function () {
             console.log("starting the game");
-            clickOnElement(gameStartButtonSelector);
+            clickOnElement(gameStartButtonSelector, 0);
             gameStarted = true;
             start();
         });
     } else {
         waitFor("#main_frame").then(setTABAVars());
+
+        goTo("event");
     }
 }
 
@@ -71,8 +72,6 @@ function setTABAVars() {
     setCurrentEventType();
     setGaugesData();
     console.log(getGaugeData());
-
-    goToEvent();
 }
 
 function setCurrentEventType() {
@@ -126,18 +125,23 @@ function getGaugeData(key = null) {
     }
 }
 
-function goToMainPage() {
-    document.querySelector("#mypage").click();
+function goTo(location) {
+    switch (location) {
+        case "home":
+            clickOnElement("#mypage").click();
+            break;
+        case "event":
+            // Navigate to the event frame and start doing the event steps. (only do this when not already on the main page.)
+            // goToMainPage();
+            console.log("go to event");
+            let eventBannerSelector = "#main_frame > a[href*='_event_']";
+            waitFor(eventBannerSelector).then(
+                clickOnElement(eventBannerSelector)
+            );
+    }
 }
 
-function goToEvent() {
-    // Navigate to the event frame and start doing the event steps. (only do this when not already on the main page.)
-    // goToMainPage();
-
-    console.log("go to event");
-    const eventBannerSelector = "#main_frame > a[href*='_event_']";
-    waitFor(eventBannerSelector).then(clickOnElement(eventBannerSelector));
-
+function doEvent() {
     switch (getCurrentEventType()) {
         case 0:
             doQuest();
@@ -161,27 +165,42 @@ function doArenaEvent() {}
 function doRaidEvent() {}
 function doTowerEvent() {
     console.log("will attempt tower event");
+
+    const eventQuestButtonSelector = "#stage_choice";
+    waitFor(eventQuestButtonSelector, function () {
+        console.log("ready to go!");
+        clickOnElement(eventQuestButtonSelector);
+    });
 }
 function doHuntEvent() {}
 
 // Helper functions
 function waitFor(selector) {
     return new Promise(function (res, rej) {
-        waitForElementToDisplay(selector, 200);
+        waitForElementToDisplay(selector, 500);
         function waitForElementToDisplay(selector, time) {
             if (document.querySelector(selector) != null) {
                 res(document.querySelector(selector));
-        } else {
+            } else {
                 setTimeout(function () {
                     waitForElementToDisplay(selector, time);
                 }, time);
-        }
+            }
         }
     });
 }
 
-function clickOnElement(selector) {
-    document.querySelector(selector).click();
+function clickOnElement(selector, delayMs = clickTimeout) {
+    setTimeout(function () {
+        console.log("click on", selector);
+        const element = document.querySelector(selector);
+        if (element) {
+            console.log("Click!");
+            document.querySelector(selector).click();
+        } else {
+            console.log("unable to find element", selector);
+        }
+    }, delayMs);
 }
 
 // Start script on page load.
