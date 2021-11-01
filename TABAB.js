@@ -30,16 +30,14 @@ let bpGaugeTime = null;
 function start() {
     if (!gameStarted) {
         const gameStartButtonSelector = ".game_start_over";
-        waitForElement(gameStartButtonSelector, function () {
+        waitFor(gameStartButtonSelector).then(function () {
             console.log("starting the game");
             clickOnElement(gameStartButtonSelector);
                 gameStarted = true;
                 start();
         });
     } else {
-        // TODO: Better to check on comback_bonus.js or login_bonus.js ?
-        // If main frame is not present, we're probably still in transition to the main frame (with exception of login page).
-        waitForElement("#main_frame", setTABAVars());
+        waitFor("#main_frame").then(setTABAVars());
     }
 }
 
@@ -131,16 +129,12 @@ function goToMainPage() {
 }
 
 function goToEvent() {
-    // Navigate to the event frame and start doing the event steps.
-    goToMainPage();
+    // Navigate to the event frame and start doing the event steps. (only do this when not already on the main page.)
+    // goToMainPage();
 
-    (function checkIfElemExists() {
-        if (!document.querySelector("#main_frame > a[href*='_event_']")) {
-            window.requestAnimationFrame(checkIfElemExists);
-        } else {
-            document.querySelector("#main_frame > a[href*='_event_']").click();
-        }
-    })();
+    console.log("go to event");
+    const eventBannerSelector = "#main_frame > a[href*='_event_']";
+    waitFor(eventBannerSelector).then(clickOnElement(eventBannerSelector));
 
     switch (getCurrentEventType()) {
         case 0:
@@ -169,15 +163,19 @@ function doTowerEvent() {
 function doHuntEvent() {}
 
 // Helper functions
-function waitForElement(selector, callback) {
-    (function checkIfElemExists() {
-        if (!document.querySelector(selector)) {
-            window.requestAnimationFrame(checkIfElemExists);
+function waitFor(selector) {
+    return new Promise(function (res, rej) {
+        waitForElementToDisplay(selector, 200);
+        function waitForElementToDisplay(selector, time) {
+            if (document.querySelector(selector) != null) {
+                res(document.querySelector(selector));
         } else {
-            console.log("calling callback function.");
-            callback();
+                setTimeout(function () {
+                    waitForElementToDisplay(selector, time);
+                }, time);
         }
-    })();
+        }
+    });
 }
 
 function clickOnElement(selector) {
