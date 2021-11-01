@@ -132,6 +132,7 @@ function goTo(location) {
             waitFor("#main_frame > a[href*='_event_']").then(
                 clickOnElement("#main_frame > a[href*='_event_']")
             );
+            appLevel = 1;
     }
 }
 
