@@ -50,11 +50,12 @@ const start = () => {
 // TODO: TABAVars -> Object
 const setTABAVars = () => {
     setCurrentEventType();
+    console.log("set current done", getCurrentEventType());
     setGaugesData();
     console.log(getGaugeData());
 };
 
-function setCurrentEventType() {
+const setCurrentEventType = () => {
     // This is only possible on the main page.
     if (!appLevel === 0) {
         goTo("home");
@@ -63,26 +64,23 @@ function setCurrentEventType() {
         return;
     }
 
-    console.log("setting current event");
     const eventBannerSelector = "#main_frame > a[href*='_event_']";
 
     let eventPrefix;
 
-    waitFor(eventBannerSelector).then(function () {
-        let eventBanner = document.querySelector(
-            "#main_frame > a[href*='_event_']"
-        );
+    let eventBanner = document.querySelector(
+        "#main_frame > a[href*='_event_']"
+    );
 
-        if (eventBanner) {
-            eventPrefix = eventBanner.getAttribute("href").split("/")[1];
-            console.log("event prefix", eventPrefix);
-        }
+    if (eventBanner) {
+        eventPrefix = eventBanner.getAttribute("href").split("/")[1];
+        console.log("event prefix", eventPrefix);
+    }
 
-        currentEventType = eventPrefix
-            ? eventTypes[eventPrefix]
-            : eventTypes.default;
-    });
-}
+    currentEventType = eventPrefix
+        ? eventTypes[eventPrefix]
+        : eventTypes.default;
+};
 
 const getCurrentEventType = () => {
     return currentEventType;
@@ -138,6 +136,7 @@ const goTo = (location) => {
 
 const doEvent = () => {
     console.log("do event?");
+    console.log(getCurrentEventType());
     switch (getCurrentEventType()) {
         case 0:
             doQuest();
