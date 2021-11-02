@@ -15,7 +15,7 @@
 let gameStarted = false;
 const clickTimeout = 2000;
 // 0: main menu, 1: event menu, 2: inside event
-const appLevel = 0;
+let appLevel = 0;
 let currentEventType = 0;
 // 0 = none/unknown, 1 = arena, 2 = raid, 3 = tower, 4 = hunt
 const eventTypes = { default: 0, arena: 1, raid: 2, tower: 3, hunt: 4 };
@@ -45,14 +45,14 @@ const start = () => {
             doEvent();
         });
     }
-}
+};
 
 // TODO: TABAVars -> Object
 const setTABAVars = () => {
     setCurrentEventType();
     setGaugesData();
     console.log(getGaugeData());
-}
+};
 
 function setCurrentEventType() {
     // This is only possible on the main page.
@@ -86,9 +86,9 @@ function setCurrentEventType() {
 
 const getCurrentEventType = () => {
     return currentEventType;
-}
+};
 
-const setGaugesData = ()  => {
+const setGaugesData = () => {
     try {
         let staminaGauge = document.querySelector("#stam_gage_num").textContent;
         staminaGauge = staminaGauge.match(".+?(?=/)");
@@ -103,9 +103,9 @@ const setGaugesData = ()  => {
     } catch (error) {
         logTABA(error);
     }
-}
+};
 
-const getGaugeData = (key = null)  => {
+const getGaugeData = (key = null) => {
     switch (key) {
         case "stamina":
             return staminaValue;
@@ -117,7 +117,7 @@ const getGaugeData = (key = null)  => {
                 bp: [bpValue, bpGaugeTime],
             };
     }
-}
+};
 
 const goTo = (location) => {
     switch (location) {
@@ -134,9 +134,10 @@ const goTo = (location) => {
             );
             appLevel = 1;
     }
-}
+};
 
 const doEvent = () => {
+    console.log("do event?");
     switch (getCurrentEventType()) {
         case 0:
             doQuest();
@@ -200,7 +201,7 @@ const clickOnElement = (selector, delayMs = clickTimeout) => {
             console.log("unable to find element", selector);
         }
     }, delayMs);
-}
+};
 
 const delay = (n) => new Promise((r) => setTimeout(r, n * 1000));
 
@@ -225,7 +226,7 @@ const logTABA = (...args) => {
     } else {
         console.log(prefix + ":" + text);
     }
-}
+};
 
 // Start script on page load.
 (function () {
