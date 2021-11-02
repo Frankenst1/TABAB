@@ -26,7 +26,7 @@ let staminaValue = null;
 let bpValue = null;
 let bpGaugeTime = null;
 
-function start() {
+const start = () => {
     if (!gameStarted) {
         // Adding opacity 1 allows us to wait to click until the "start" animation is done.
         const opacityStyle = "[style='opacity: 1;']";
@@ -42,12 +42,13 @@ function start() {
             setTABAVars();
             // TODO: add ability to start go to (when we want to do events/quests etc.).
             goTo("event");
+            doEvent();
         });
     }
 }
 
 // TODO: TABAVars -> Object
-function setTABAVars() {
+const setTABAVars = () => {
     setCurrentEventType();
     setGaugesData();
     console.log(getGaugeData());
@@ -83,11 +84,11 @@ function setCurrentEventType() {
     });
 }
 
-function getCurrentEventType() {
+const getCurrentEventType = () => {
     return currentEventType;
 }
 
-function setGaugesData() {
+const setGaugesData = ()  => {
     try {
         let staminaGauge = document.querySelector("#stam_gage_num").textContent;
         staminaGauge = staminaGauge.match(".+?(?=/)");
@@ -104,7 +105,7 @@ function setGaugesData() {
     }
 }
 
-function getGaugeData(key = null) {
+const getGaugeData = (key = null)  => {
     switch (key) {
         case "stamina":
             return staminaValue;
@@ -118,7 +119,7 @@ function getGaugeData(key = null) {
     }
 }
 
-function goTo(location) {
+const goTo = (location) => {
     switch (location) {
         case "home":
             clickOnElement("#mypage").click();
@@ -135,7 +136,7 @@ function goTo(location) {
     }
 }
 
-function doEvent() {
+const doEvent = () => {
     switch (getCurrentEventType()) {
         case 0:
             doQuest();
@@ -153,11 +154,11 @@ function doEvent() {
             doHuntEvent();
             break;
     }
-}
-function doQuest() {}
-function doArenaEvent() {}
-function doRaidEvent() {}
-function doTowerEvent() {
+};
+const doQuest = () => {};
+const doArenaEvent = () => {};
+const doRaidEvent = () => {};
+const doTowerEvent = () => {
     console.log("will attempt tower event");
 
     const eventQuestButtonSelector = "#stage_choice";
@@ -165,11 +166,15 @@ function doTowerEvent() {
         console.log("ready to go!");
         clickOnElement(eventQuestButtonSelector);
     });
-}
-function doHuntEvent() {}
+};
+const doHuntEvent = () => {
+    console.log("doing a hunt event!");
+};
+
+doEvents: (test) => {};
 
 // Helper functions
-function waitFor(selector) {
+const waitFor = (selector) => {
     return new Promise(function (res, rej) {
         waitForElementToDisplay(selector, 500);
         function waitForElementToDisplay(selector, time) {
@@ -182,9 +187,9 @@ function waitFor(selector) {
             }
         }
     });
-}
+};
 
-function clickOnElement(selector, delayMs = clickTimeout) {
+const clickOnElement = (selector, delayMs = clickTimeout) => {
     setTimeout(function () {
         console.log("click on", selector);
         const element = document.querySelector(selector);
@@ -199,7 +204,7 @@ function clickOnElement(selector, delayMs = clickTimeout) {
 
 const delay = (n) => new Promise((r) => setTimeout(r, n * 1000));
 
-function logTABA(...args) {
+const logTABA = (...args) => {
     let currDate = new Date();
     let text;
     const prefix =
