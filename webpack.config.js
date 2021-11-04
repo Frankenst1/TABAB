@@ -1,7 +1,21 @@
 const path = require('path');
+const webpack = require('webpack');
+const fs = require('fs');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = {
-  entry: './src/index.ts',
+  entry: "./src/userscript-main.ts",
+	optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          output: {
+            comments: /(\s@|UserScript==)/i,
+          },
+        }
+      })
+    ]
+  },
   module: {
     rules: [
       {
@@ -11,11 +25,18 @@ module.exports = {
       },
     ],
   },
+	plugins: [
+    new webpack.BannerPlugin({
+      banner: fs.readFileSync(path.resolve(__dirname, "src/userscript-main.ts"), "utf-8").replace(/(==\/UserScript==)[\s\S]+$/, "$1"),
+      entryOnly: true,
+      raw: true
+    })
+  ],
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
   },
   output: {
-    filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve(__dirname, "dist"),
+    filename: "script.user.js"
   },
 };
